@@ -35,6 +35,8 @@ gulp.task('html', function(){
         .pipe(connect.reload());
 });
 
+gulp.task('default', ['html','open']);
+
 
 
 
