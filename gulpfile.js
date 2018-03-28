@@ -24,10 +24,11 @@ gulp.task('connect', function(){
     });
 });
 
-gulp.task('open', ['connect'], function(){
-    gulp.src('dist/index.html')
-        .pipe(open({uri:config.devBaseUrl + ':' + config.port + '/'}));
+gulp.task('open', ['connect'], function() {
+	gulp.src('dist/index.html')
+		.pipe(open({uri: config.devBaseUrl + ':' + config.port + '/'}));
 });
+
 
 gulp.task('html', function(){
     gulp.src(config.paths.html)
@@ -35,7 +36,12 @@ gulp.task('html', function(){
         .pipe(connect.reload());
 });
 
-gulp.task('default', ['html','open']);
+gulp.task('watch', function(){
+    gulp.watch(config.paths.html, ['html']);
+
+});
+
+gulp.task('default', ['html','open','watch']);
 
 
 
