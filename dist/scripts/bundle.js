@@ -49368,6 +49368,8 @@ module.exports = AuthorPage;
 "use strict";
 
 var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
 
 var Header = React.createClass({displayName: "Header",
 	render: function() {
@@ -49378,9 +49380,9 @@ var Header = React.createClass({displayName: "Header",
                 React.createElement("img", {src: "images/pluralsight-logo.png"})
               ), 
               React.createElement("ul", {className: "nav navbar-nav"}, 
-                React.createElement("li", null, React.createElement("a", {href: "/"}, "Home")), 
-                React.createElement("li", null, React.createElement("a", {href: "/#authors"}, "Authors")), 
-                React.createElement("li", null, React.createElement("a", {href: "/#about"}, "About"))
+                React.createElement("li", null, React.createElement(Link, {to: "app"}, "Home")), 
+                React.createElement("li", null, React.createElement(Link, {to: "authors"}, "Authors")), 
+                React.createElement("li", null, React.createElement(Link, {to: "about"}, "About"))
               )
           )
         )
@@ -49389,17 +49391,20 @@ var Header = React.createClass({displayName: "Header",
 });
 
 module.exports = Header;
-},{"react":197}],205:[function(require,module,exports){
+},{"react":197,"react-router":28}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
 
 var Home = React.createClass({displayName: "Home",
     render: function(){
         return (
             React.createElement("div", {className: "jumbotron"}, 
                 React.createElement("h1", null, "PS Admin"), 
-                React.createElement("p", null, "React tut")
+                React.createElement("p", null, "React tut"), 
+                React.createElement(Link, {to: "about", className: "btn btn-primary btn-lg"}, "Learn more")
             )
         );
     }
@@ -49407,7 +49412,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"react":197}],206:[function(require,module,exports){
+},{"react":197,"react-router":28}],206:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
