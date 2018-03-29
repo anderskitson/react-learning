@@ -49252,7 +49252,7 @@ var React = require('react');
 
 var About = React.createClass({displayName: "About",
 	statics: {
-		willTransitionTo:function(transition, params, query, callback){
+		willTransitionTo: function(transition, params, query, callback){
 			if(!confirm('Are you sure you want to read a page that\'s this boring?')){
 				transition.about();
 			}else{
@@ -49453,7 +49453,7 @@ var React = require('react');
 var Router = require('react-router');
 var routes = require('./routes');
 
-Router.run(routes, function(Handler){
+Router.run(routes, Router.HistoryLocation, function(Handler){
     React.render(React.createElement(Handler, null), document.getElementById('app'));
 });
 },{"./routes":208,"react":197,"react-router":28}],208:[function(require,module,exports){
