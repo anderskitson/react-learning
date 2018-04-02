@@ -50277,6 +50277,14 @@ var AuthorActions = {
             actionType: ActionTypes.CREATE_AUTHOR,
             author: newAuthor
         });
+    },
+    updateAuthor: function(author){
+        var updatedAuthor = AuthourApi.saveAuthor(author);
+
+        Dispatcher.dispatch({
+            actionType: ActionTypes.UPDATE_AUTHOR,
+            author: updatedAuthor
+        });
     }
 };
 
@@ -50577,13 +50585,12 @@ var ManageAuthorPage = React.createClass({displayName: "ManageAuthorPage",
             dirty: false
 		};
     },
-    componentWillMount: function(){
-        var authorId = this.props.params.id;
-
-        if(authorId){
-            this.setState({author: AuthorStore.getAuthorById(authorId)});
-        }
-    },
+    componentWillMount: function() {
+		var authorId = this.props.params.id; //from the path '/author:id'
+		if (authorId) {
+			this.setState({author: AuthorStore.getAuthorById(authorId) });
+		}
+	},
     setAuthorState: function(event) {
         this.setState({dirty: true});
 		var field = event.target.name;
@@ -50613,7 +50620,12 @@ var ManageAuthorPage = React.createClass({displayName: "ManageAuthorPage",
         if(!this.authorFormIsValid()){
             return;
         }
-        AuthorActions.createAuthor(this.state.author);
+
+        if(this.state.author.id) {
+            AuthorActions.updateAuthor(this.state.author);
+        }else{
+            AuthorActions.createAuthor(this.state.author);
+        }
         this.setState({dirty: false});
         toastr.success('Author saved');
         this.transitionTo('authors');
@@ -50747,7 +50759,8 @@ var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
     INITIALIZE: null,
-    CREATE_AUTHOR: null
+    CREATE_AUTHOR: null,
+    UPDATE_AUTHOR: null
 });
 
 },{"react/lib/keyMirror":187}],219:[function(require,module,exports){
@@ -50762,6 +50775,8 @@ var React = require('react');
 var Router = require('react-router');
 var routes = require('./routes');
 var InitializeActions = require('./actions/initializeActions');
+
+InitializeActions.initApp();
 
 Router.run(routes, function(Handler){
     React.render(React.createElement(Handler, null), document.getElementById('app'));
@@ -50806,33 +50821,52 @@ var CHANGE_EVENT = 'change';
 var _authors = [];
 
 var AuthorStore = assign({}, EventEmitter.prototype, {
-    addChangeListener: function(callback){
-        this.on(CHANGE_EVENT, callback);
-    },
+	addChangeListener: function(callback) {
+		this.on(CHANGE_EVENT, callback);
+	},
 
-    removeChangeListener: function(callback){
-        this.removeListener(CHANGE_EVENT, callback);
-    },
+	removeChangeListener: function(callback) {
+		this.removeListener(CHANGE_EVENT, callback);
+	},
 
-    emitChange: function(){
-        this.emit(CHANGE_EVENT);
-    },
+	emitChange: function() {
+		this.emit(CHANGE_EVENT);
+	},
 
-    getAllAuthors: function(){
-        return _authors;
-    },
-    
-    getAuthorByID: function(id) {
-        return _.find(_authors, {id: id});
-    }
+	getAllAuthors: function() {
+		return _authors;
+	},
+
+	getAuthorById: function(id) {
+		return _.find(_authors, {id: id});
+	}
 });
 
-Dispatcher.register(function(action){
-    switch(action.actionType){
-        case ActionTypes.CREATE_AUTHOR:
-            _authors.push(action.author);
-            AuthorStore.emitChange();
-    }
+Dispatcher.register(function(action) {
+	switch(action.actionType) {
+		case ActionTypes.INITIALIZE:
+			_authors = action.initialData.authors;
+			AuthorStore.emitChange();
+			break;
+		case ActionTypes.CREATE_AUTHOR:
+			_authors.push(action.author);
+			AuthorStore.emitChange();
+			break;
+		case ActionTypes.UPDATE_AUTHOR:
+			var existingAuthor = _.find(_authors, {id: action.author.id});
+			var existingAuthorIndex = _.indexOf(_authors, existingAuthor); 
+			_authors.splice(existingAuthorIndex, 1, action.author);
+			AuthorStore.emitChange();
+			break;	
+		case ActionTypes.DELETE_AUTHOR:
+			_.remove(_authors, function(author) {
+				return action.id === author.id;
+			});
+			AuthorStore.emitChange();
+			break;
+		default:
+			// no op
+	}
 });
 
 module.exports = AuthorStore;
